@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بنك أسئلة - عثمان بن عفان</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+  
+  :root {
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --primary: #16a34a;
+    --primary-dark: #15803d;
+    --accent: #0d9488;
+    --muted: #6b7280;
+  }
+  
+  body.dark {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+  }
+  
+  body {
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: all 0.3s;
+    padding: 20px;
+  }
+  
+  .container { max-width: 600px; margin: 0 auto; }
+  
+  .header { text-align: center; padding: 20px 0; }
+  .header h1 { font-size: 26px; margin-bottom: 8px; }
+  .header p { color: var(--muted); font-size: 15px; }
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #16a34a, #0d9488);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 12px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 18px;
+    margin: 12px 0;
+    border: none;
+    border-radius: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: white;
+  }
+  .btn-light {
+    background: var(--card);
+    color: var(--text);
+    border: 2px solid #e5e7eb;
+  }
+  body.dark .btn-light { border-color: #334155; }
+  
+  .hero-card {
+    background: linear-gradient(135deg, #065f46, #16a34a);
+    color: white;
+    border-radius: 24px;
+    padding: 24px;
+    margin-top: 24px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(22, 163, 74, 0.3);
+  }
+  .hero-card .tag {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: inline-block;
+  }
+  .hero-card h2 { font-size: 30px; line-height: 1.3; margin-bottom: 8px; }
+  .hero-card p { font-size: 15px; opacity: 0.9; line-height: 1.7; }
+  
+  .screen { display: none; }
+  .screen.active { display: block; }
+  
+  .question-box {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 24px;
+    margin: 20px 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  
+  .progress-bar {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  body.dark .progress-bar { background: #334155; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #16a34a, #0d9488);
+    width: 0%;
+    transition: width 0.3s;
+  }
+  
+  .question-num { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
+  .question-text {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  
+  .option {
+    background: var(--bg);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 10px 0;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+    text-align: right;
+    width: 100%;
+    font-family: inherit;
+    color: var(--text);
+  }
+  .option:hover {
+    border-color: var(--primary);
+    background: rgba(22, 163, 74, 0.1);
+  }
+  .option.correct { background: #10b981 !important; color: white !important; }
+  .option.wrong { background: #ef4444 !important; color: white !important; }
+  .option:disabled { cursor: not-allowed; }
+  
+  .result-box { text-align: center; padding: 40px 20px; }
+  .result-box .score {
+    font-size: 60px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #16a34a, #0d9488);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .result-box .emoji { font-size: 70px; margin-bottom: 10px; }
+  
+  .stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 24px 0;
+    padding: 16px;
+    background: var(--card);
+    border-radius: 16px;
+  }
+  .stat-item { text-align: center; }
+  .stat-item .num { font-size: 24px; font-weight: bold; }
+  .stat-item .lbl { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- الشاشة الرئيسية -->
+  <div id="home" class="screen active">
+    <div class="header">
+      <h1>بنك الأسئلة التفاعلي</h1>
+      <p>عن الصحابي الجليل عثمان بن عفان</p>
+      <div class="badge">رضي الله عنه</div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startQuiz()">
+      🕌 ابدأ الاختبار
+    </button>
+    <button class="btn btn-light" onclick="toggleDark()">
+      🌙 <span id="darkLabel">الوضع الداكن</span>
+    </button>
+
+    <div class="hero-card">
+      <div class="tag">🕌 ذو النورين</div>
+      <h2>عثمان بن عفان</h2>
+      <p>الخليفة الراشدي الثالث، جامع القرآن،<br>وصاحب أعظم الأسطول البحري في الإسلام</p>
+    </div>
+  </div>
+
+  <!-- شاشة الأسئلة -->
+  <div id="quiz" class="screen">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress"></div>
+    </div>
+    <div class="question-box">
+      <div class="question-num" id="qNum">السؤال 1</div>
+      <div class="question-text" id="qText"></div>
+      <div id="options"></div>
+    </div>
+  </div>
+
+  <!-- شاشة النتيجة -->
+  <div id="result" class="screen">
+    <div class="result-box">
+      <div class="emoji" id="resultEmoji">🎉</div>
+      <div class="score"><span id="finalScore">0</span>%</div>
+      <p id="resultMsg" style="margin-top: 16px; font-size: 18px;"></p>
+    </div>
+    <div class="stats">
+      <div class="stat-item">
+        <div class="num" style="color: #10b981;" id="correctCount">0</div>
+        <div class="lbl">صحيحة</div>
+      </div>
+      <div class="stat-item">
+        <div class="num" style="color: #ef4444;" id="wrongCount">0</div>
+        <div class="lbl">خاطئة</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="startQuiz()">🔄 إعادة المحاولة</button>
+    <button class="btn btn-light" onclick="showScreen('home')">🏠 الرئيسية</button>
+  </div>
+
+</div>
+
+<script>
+  // ===== بنك أسئلة عثمان بن عفان =====
+  const questions = [
+    {
+      q: "ما هو لقب عثمان بن عفان رضي الله عنه؟",
+      options: ["ذو النورين", "الفاروق", "أسد الله", "سيف الله المسلول"],
+      correct: 0
+    },
+    {
+      q: "لماذا لُقّب عثمان بن عفان بـ 'ذي النورين'؟",
+      options: [
+        "لأنه تزوج ابنتي النبي ﷺ رقية ثم أم كلثوم",
+        "لأنه كان جميل الوجه",
+        "لأنه رأى النور في الغار",
+        "لأنه قائد الفتوحات"
+      ],
+      correct: 0
+    },
+    {
+      q: "ما هو ترتيب عثمان بن عفان بين الخلفاء الراشدين؟",
+      options: ["الثالث", "الأول", "الثاني", "الرابع"],
+      correct: 0
+    },
+    {
+      q: "ما أهم إنجاز لعثمان بن عفان في خدمة القرآن الكريم؟",
+      options: [
+        "جمع القرآن في مصحف واحد ونشره في الأمصار",
+        "أول من كتب القرآن",
+        "أول من حفظ القرآن",
+        "ترجمة القرآن"
+      ],
+      correct: 0
+    },
+    {
+      q: "في عهد أي خليفة تم إنشاء أول أسطول بحري إسلامي؟",
+      options: ["عثمان بن عفان", "أبو بكر الصديق", "عمر بن الخطاب", "علي بن أبي طالب"],
+      correct: 0
+    },
+    {
+      q: "لماذا اشترى عثمان بئر رومة؟",
+      options: [
+        "لجعله مجانًا للمسلمين",
+        "لبيعه والربح منه",
+        "لبناء بيت له",
+        "لزراعة النخيل"
+      ],
+      correct: 0
+    },
+    {
+      q: "ما موقف عثمان بن عفان في جيش العسرة (تبوك)؟",
+      options: [
+        "جهّز الجيش بثلث الأموال (أنفق مالًا عظيمًا)",
+        "كان قائد الجيش",
+        "لم يشارك في التجهيز",
+        "أرسل الطعام فقط"
+      ],
+      correct: 0
+    },
+    {
+      q: "كم سنة استمرت خلافة عثمان بن عفان؟",
+      options: ["12 سنة", "10 سنوات", "5 سنوات", "20 سنة"],
+      correct: 0
+    },
+    {
+      q: "ما اللقب الذي كان يُنادى به عثمان في الجاهلية؟",
+      options: ["أبو عمرو", "أبو بكر", "أبو تراب", "أبو حفص"],
+      correct: 0
+    },
+    {
+      q: "في أي سنة هجرية استشهد عثمان بن عفان؟",
+      options: ["35 هـ", "23 هـ", "40 هـ", "13 هـ"],
+      correct: 0
+    },
+    {
+      q: "من هي أول زوجة لعثمان بن عفان من بنات النبي ﷺ؟",
+      options: ["رقية رضي الله عنها", "فاطمة", "أم كلثوم", "زينب"],
+      correct: 0
+    },
+    {
+      q: "ماذا فعل عثمان عند وفاة زوجته رقية رضي الله عنها؟",
+      options: [
+        "تزوج أختها أم كلثوم بإشارة من النبي ﷺ",
+        "توقف عن الزواج",
+        "سافر بعيدًا",
+        "اعتزل الناس"
+      ],
+      correct: 0
+    },
+    {
+      q: "ما أشهر أعمال عثمان في توسعة المسجد الحرام والمسجد النبوي؟",
+      options: [
+        "وسّع المسجدين وزاد في بنائهما",
+        "هدم المسجد النبوي",
+        "بنى مسجدًا جديدًا",
+        "لم يقم بأي توسعة"
+      ],
+      correct: 0
+    },
+    {
+      q: "من الصحابة الذين شهد لهم النبي ﷺ بالجنة ومنهم عثمان؟",
+      options: [
+        "العشرة المبشرين بالجنة",
+        "أهل الصفة",
+        "الأنصار",
+        "المهاجرون"
+      ],
+      correct: 0
+    },
+    {
+      q: "ما الصفة الأبرز في شخصية عثمان بن عفان؟",
+      options: ["الحياء والكرم", "الشدة", "الفقر", "الجهل"],
+      correct: 0
+    },
+    {
+      q: "ما القبيلة التي ينتمي إليها عثمان بن عفان؟",
+      options: ["بني أمية (قريش)", "بني هاشم", "الأنصار", "بني تميم"],
+      correct: 0
+    },
+    {
+      q: "كم سنة كان عمر عثمان عند إسلامه تقريبًا؟",
+      options: ["أكثر من 30 سنة", "18 سنة", "10 سنوات", "50 سنة"],
+      correct: 0
+    },
+    {
+      q: "من الذي دعا عثمان للإسلام؟",
+      options: ["أبو بكر الصديق", "عمر بن الخطاب", "علي بن أبي طالب", "حمزة بن عبد المطلب"],
+      correct: 0
+    },
+    {
+      q: "ما موقف عثمان من الهجرة إلى الحبشة؟",
+      options: [
+        "هاجر إليها مع زوجته رقية",
+        "رفض الهجرة",
+        "هاجر إلى الطائف",
+        "بقي في مكة"
+      ],
+      correct: 0
+    },
+    {
+      q: "بماذا لُقّب عثمان أيضًا لشدة حيائه؟",
+      options: [
+        "أشد الناس حياءً (حتى الملائكة تستحي منه)",
+        "الشجاع",
+        "الخطيب",
+        "الحكيم"
+      ],
+      correct: 0
+    }
+  ];
+
+  let current = 0;
+  let correct = 0;
+  let wrong = 0;
+  let answered = false;
+  let shuffled = [];
+
+  function shuffleQuestions() {
+    shuffled = [...questions].sort(() => Math.random() - 0.5);
+  }
+
+  function startQuiz() {
+    current = 0; correct = 0; wrong = 0;
+    shuffleQuestions();
+    showScreen('quiz');
+    loadQuestion();
+  }
+
+  function loadQuestion() {
+    answered = false;
+    const q = shuffled[current];
+    
+    document.getElementById('qNum').textContent = 
+      `السؤال ${current + 1} من ${shuffled.length}`;
+    document.getElementById('qText').textContent = q.q;
+    
+    document.getElementById('progress').style.width = 
+      ((current / shuffled.length) * 100) + '%';
+    
+    const optsDiv = document.getElementById('options');
+    optsDiv.innerHTML = '';
+    
+    // خلط الخيارات
+    const correctText = q.options[q.correct];
+    const shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+    
+    shuffledOptions.forEach((opt) => {
+      const btn = document.createElement('button');
+      btn.className = 'option';
+      btn.textContent = opt;
+      btn.onclick = () => checkAnswer(opt, correctText, btn);
+      optsDiv.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, correctText, btn) {
+    if (answered) return;
+    answered = true;
+    
+    const allBtns = document.querySelectorAll('.option');
+    allBtns.forEach(b => b.disabled = true);
+    
+    if (selected === correctText) {
+      btn.classList.add('correct');
+      correct++;
+    } else {
+      btn.classList.add('wrong');
+      allBtns.forEach(b => {
+        if (b.textContent === correctText) b.classList.add('correct');
+      });
+      wrong++;
+    }
+    
+    setTimeout(() => {
+      current++;
+      if (current < shuffled.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }, 1300);
+  }
+
+  function showResult() {
+    showScreen('result');
+    const percent = Math.round((correct / shuffled.length) * 100);
+    document.getElementById('finalScore').textContent = percent;
+    document.getElementById('correctCount').textContent = correct;
+    document.getElementById('wrongCount').textContent = wrong;
+    
+    let emoji = '🎉', msg = '';
+    if (percent === 100) { emoji = '🏆'; msg = 'ما شاء الله! درجة كاملة!'; }
+    else if (percent >= 70) { emoji = '🌟'; msg = 'ممتاز! بارك الله فيك'; }
+    else if (percent >= 50) { emoji = '🙂'; msg = 'جيد، راجع المزيد عن عثمان رضي الله عنه'; }
+    else { emoji = '📚'; msg = 'تحتاج مراجعة سيرة الصحابي الجليل'; }
+    
+    document.getElementById('resultEmoji').textContent = emoji;
+    document.getElementById('resultMsg').textContent = msg;
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function toggleDark() {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    document.getElementById('darkLabel').textContent = 
+      isDark ? 'الوضع الفاتح ☀️' : 'الوضع الداكن 🌙';
+  }
+</script>
+
+</body>
+</html>
